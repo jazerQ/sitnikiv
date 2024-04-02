@@ -18,7 +18,7 @@ void CScaleShift::Scale(double newSc)
 
 void CScaleShift::Shift(CPoint & ptNew)
 {
-	m_ptC += ptNew;
+	m_ptC = ptNew;
 }
 
 CPoint CScaleShift::ToGraph(double x, double y)

@@ -38,6 +38,9 @@ void CMyGraph::OnPaint()
 					   // Do not call CStatic::OnPaint() for painting messages
 	CRect rc;
 	GetClientRect(&rc);
+	CRgn rgn;
+	rgn.CreateRectRgn(rc.left, rc.top, rc.right, rc.bottom);
+	dc.SelectClipRgn(&rgn);
 
 	dc.FillSolidRect(&rc, RGB(0, 128, 128));
 
@@ -61,6 +64,7 @@ void CMyGraph::OnPaint()
 		CPen penG;
 		penG.CreatePen(PS_SOLID, 1, RGB(255, 128, 0));
 		dc.SelectObject(&penG);
+		size_t szV = m_vecP.size();
 		for (size_t i = 0; i < m_vecP.size(); i++)
 		{
 			if(!i)

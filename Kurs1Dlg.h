@@ -8,6 +8,20 @@
 #include "Calc.h"
 #include "IfaceKurs.h"
 #include "afxwin.h"
+
+struct Scale_Shift_s
+{
+	double ScaleX;
+	double ScaleY;
+	int ShiftX, ShiftY;
+	struct Scale_Shift_s() {
+		ScaleX = 1; ScaleY = 1; ShiftX = ShiftY = 100;
+	}
+
+};
+
+
+
 // диалоговое окно CKurs1Dlg
 class CKurs1Dlg : public CDialogEx 
 	, IfaceKurs
@@ -46,5 +60,15 @@ public:
 	afx_msg void OnEnChangeEditA();
 protected:
 	CEdit m_edA;
+	CEdit m_EdFi;
 	double m_A;
+	double m_Fi;
+	Scale_Shift_s m_ScShift;
+protected:
+	void ScaleShift();
+public:
+	afx_msg void OnEnChangeEditFi();
+	afx_msg void OnBnClickedButScup();
+	afx_msg void OnBnClickedButScdn();
+	//afx_msg void OnBnClickedBtnScUp();
 };

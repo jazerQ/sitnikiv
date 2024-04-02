@@ -52,6 +52,8 @@ END_MESSAGE_MAP()
 CKurs1Dlg::CKurs1Dlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_KURS1_DIALOG, pParent)
 	,m_A(0)
+	,m_Fi(0)
+	, m_ScShift()
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -60,6 +62,7 @@ void CKurs1Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_A, m_edA);
+	DDX_Control(pDX, IDC_EDIT_FI, m_EdFi);
 }
 
 BEGIN_MESSAGE_MAP(CKurs1Dlg, CDialogEx)
@@ -69,6 +72,10 @@ BEGIN_MESSAGE_MAP(CKurs1Dlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CKurs1Dlg::OnBnClickedOk)
 	ON_BN_CLICKED(ID_WINDOW_TILE_VERT, &CKurs1Dlg::OnBnClickedWindowTileVert)
 	ON_EN_CHANGE(IDC_EDIT_A, &CKurs1Dlg::OnEnChangeEditA)
+	ON_EN_CHANGE(IDC_EDIT_FI, &CKurs1Dlg::OnEnChangeEditFi)
+	ON_BN_CLICKED(IDC_BUT_SCUP, &CKurs1Dlg::OnBnClickedButScup)
+	ON_BN_CLICKED(IDC_BUT_SCDN, &CKurs1Dlg::OnBnClickedButScdn)
+	//ON_BN_CLICKED(IDC_BTN_SC_UP, &CKurs1Dlg::OnBnClickedBtnScUp)
 END_MESSAGE_MAP()
 
 
@@ -106,10 +113,12 @@ BOOL CKurs1Dlg::OnInitDialog()
 	// TODO: добавьте дополнительную инициализацию
 	m_paint.SubclassDlgItem(IDC_GRAPH, this);
 
-	m_Calc.Scale(10);
+	m_Calc.Scale(m_ScShift.ScaleX);
 	CRect rc;
 	m_paint.GetClientRect(&rc);
-	m_Calc.Shift(rc.CenterPoint());
+	m_ScShift.ShiftX = rc.CenterPoint().x;
+	m_ScShift.ShiftY = rc.CenterPoint().y;
+	m_Calc.Shift(CPoint(m_ScShift.ShiftX, m_ScShift.ShiftY));
 	return TRUE;  // возврат значения TRUE, если фокус не передан элементу управления
 }
 
@@ -194,7 +203,7 @@ void CKurs1Dlg::Risovat(double A, double Phase)
 
 void CKurs1Dlg::OnBnClickedWindowTileVert()
 {
-	Risovat(m_A, 1);
+	Risovat(m_A, m_Fi);
 }
 
 int CKurs1Dlg::GetVecPt(std::vector<CPoint>& vec) const
@@ -212,3 +221,39 @@ void CKurs1Dlg::OnEnChangeEditA()
 	m_A = _wtof(strA);
 	OnBnClickedWindowTileVert();
 }
+
+
+void CKurs1Dlg::ScaleShift()
+{
+	m_Calc.Scale(m_ScShift.ScaleX);
+	m_Calc.Shift(CPoint(m_ScShift.ShiftX, m_ScShift.ShiftY));
+}
+
+void CKurs1Dlg::OnEnChangeEditFi()
+{
+	CString strA;
+	m_EdFi.GetWindowText(strA);
+
+	m_Fi = _wtof(strA);
+	OnBnClickedWindowTileVert();
+}
+
+
+void CKurs1Dlg::OnBnClickedButScup()
+{
+	m_ScShift.ScaleX *= 1.25;
+	m_ScShift.ScaleY = m_ScShift.ScaleX;
+	ScaleShift();
+	OnBnClickedWindowTileVert();
+}
+
+
+void CKurs1Dlg::OnBnClickedButScdn()
+{
+	m_ScShift.ScaleX /= 1.25;
+	m_ScShift.ScaleY = m_ScShift.ScaleX;
+	ScaleShift();
+	OnBnClickedWindowTileVert();
+}
+
+
