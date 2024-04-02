@@ -8,6 +8,7 @@
 #include "Calc.h"
 #include "IfaceKurs.h"
 #include "afxwin.h"
+#include "afxcmn.h"
 
 struct Scale_Shift_s
 {
@@ -64,6 +65,7 @@ protected:
 	double m_A;
 	double m_Fi;
 	Scale_Shift_s m_ScShift;
+	bool m_bInited;
 protected:
 	void ScaleShift();
 public:
@@ -71,4 +73,10 @@ public:
 	afx_msg void OnBnClickedButScup();
 	afx_msg void OnBnClickedButScdn();
 	//afx_msg void OnBnClickedBtnScUp();
+	
+	afx_msg void OnNMCustomdrawSliderScale(NMHDR *pNMHDR, LRESULT *pResult);
+public:
+	CSliderCtrl m_SliderScale;
+	afx_msg void OnTRBNThumbPosChangingSliderScale(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMReleasedcaptureSliderScale(NMHDR *pNMHDR, LRESULT *pResult);
 };

@@ -54,6 +54,7 @@ CKurs1Dlg::CKurs1Dlg(CWnd* pParent /*=NULL*/)
 	,m_A(0)
 	,m_Fi(0)
 	, m_ScShift()
+	, m_bInited(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -63,6 +64,7 @@ void CKurs1Dlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_A, m_edA);
 	DDX_Control(pDX, IDC_EDIT_FI, m_EdFi);
+	DDX_Control(pDX, IDC_SLIDER_SCALE, m_SliderScale);
 }
 
 BEGIN_MESSAGE_MAP(CKurs1Dlg, CDialogEx)
@@ -76,6 +78,9 @@ BEGIN_MESSAGE_MAP(CKurs1Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUT_SCUP, &CKurs1Dlg::OnBnClickedButScup)
 	ON_BN_CLICKED(IDC_BUT_SCDN, &CKurs1Dlg::OnBnClickedButScdn)
 	//ON_BN_CLICKED(IDC_BTN_SC_UP, &CKurs1Dlg::OnBnClickedBtnScUp)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_SLIDER_SCALE, &CKurs1Dlg::OnNMCustomdrawSliderScale)
+	ON_NOTIFY(TRBN_THUMBPOSCHANGING, IDC_SLIDER_SCALE, &CKurs1Dlg::OnTRBNThumbPosChangingSliderScale)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_SCALE, &CKurs1Dlg::OnNMReleasedcaptureSliderScale)
 END_MESSAGE_MAP()
 
 
@@ -119,6 +124,10 @@ BOOL CKurs1Dlg::OnInitDialog()
 	m_ScShift.ShiftX = rc.CenterPoint().x;
 	m_ScShift.ShiftY = rc.CenterPoint().y;
 	m_Calc.Shift(CPoint(m_ScShift.ShiftX, m_ScShift.ShiftY));
+	m_SliderScale.SetRange(1, 10, TRUE);
+	m_SliderScale.SetPos(10);
+
+	m_bInited = true;
 	return TRUE;  // возврат значения TRUE, если фокус не передан элементу управления
 }
 
@@ -241,19 +250,57 @@ void CKurs1Dlg::OnEnChangeEditFi()
 
 void CKurs1Dlg::OnBnClickedButScup()
 {
-	m_ScShift.ScaleX *= 1.25;
+	/*m_ScShift.ScaleX *= 1.25;
 	m_ScShift.ScaleY = m_ScShift.ScaleX;
 	ScaleShift();
-	OnBnClickedWindowTileVert();
+	OnBnClickedWindowTileVert();*/
+	m_SliderScale.SetPos(m_SliderScale.GetPos() - 1);
+	LRESULT res;
+	OnNMReleasedcaptureSliderScale(nullptr, &res);
 }
 
 
 void CKurs1Dlg::OnBnClickedButScdn()
 {
-	m_ScShift.ScaleX /= 1.25;
+	/*m_ScShift.ScaleX /= 1.25;
 	m_ScShift.ScaleY = m_ScShift.ScaleX;
 	ScaleShift();
-	OnBnClickedWindowTileVert();
+	OnBnClickedWindowTileVert();*/
+	m_SliderScale.SetPos(m_SliderScale.GetPos() + 1);
+	LRESULT res;
+	OnNMReleasedcaptureSliderScale(nullptr, &res);
 }
 
 
+
+
+void CKurs1Dlg::OnNMCustomdrawSliderScale(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	*pResult = 0;
+}
+
+
+void CKurs1Dlg::OnTRBNThumbPosChangingSliderScale(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// This feature requires Windows Vista or greater.
+	// The symbol _WIN32_WINNT must be >= 0x0600.
+	NMTRBTHUMBPOSCHANGING *pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING *>(pNMHDR);
+	int nPos = m_SliderScale.GetPos()-10;
+	m_ScShift.ScaleX = nPos ? 1.25 * nPos : 1;
+	*pResult = 0;
+}
+
+
+void CKurs1Dlg::OnNMReleasedcaptureSliderScale(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	if (!m_bInited)
+		return;
+	int nPos = 10 - m_SliderScale.GetPos();
+	m_ScShift.ScaleX = nPos ? 1.25 * nPos : 1;
+	ScaleShift();
+	OnBnClickedWindowTileVert();
+	*pResult = 0;
+}
